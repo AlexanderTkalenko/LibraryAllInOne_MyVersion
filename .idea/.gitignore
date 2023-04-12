@@ -7,7 +7,7 @@
 /dataSources/
 /dataSources.local.xml
 /*.xml
-/*.html
+*.html
 /target
 /out
 /*.idea

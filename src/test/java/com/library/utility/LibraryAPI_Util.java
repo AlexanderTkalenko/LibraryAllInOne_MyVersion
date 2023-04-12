@@ -38,8 +38,8 @@ public class LibraryAPI_Util {
                 .formParam("password" , password).
                 when()
                 .post(ConfigurationReader.getProperty("library.baseUri")+"/login")
-                .prettyPeek()
-                .path("token") ;
+                .then()
+                .statusCode(200).extract().jsonPath().getString("token");
 
 
     }

@@ -3,6 +3,7 @@ package com.library.steps;
 
 import com.library.utility.LibraryTestBase;
 import io.restassured.http.ContentType;
+import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.*;
@@ -39,6 +40,13 @@ public class LogInTest extends LibraryTestBase {
                 .get("/dashboard_stats").prettyPeek()
                 .then()
                 .statusCode(200);
+
+
+
+        RequestSpecification requestSpec =  given().log().uri().contentType(ContentType.URLENC);
+
+
+
 
     }
 

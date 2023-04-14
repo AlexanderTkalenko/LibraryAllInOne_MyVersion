@@ -180,7 +180,7 @@ public class API_StepDefs {
     public void ui_database_and_api_created_book_information_must_match() {
 
         bookPage.search.sendKeys(requestBody.get("name").toString());
-        BrowserUtil.waitFor(3);
+        BrowserUtil.waitFor(2);
 
 
         String query = "select * from books where id = " + newId;
@@ -260,7 +260,7 @@ public class API_StepDefs {
     public void created_user_should_be_able_to_login_library_ui() {
 
         loginPage.login(newEmailAPI, newPasswordAPI);
-        BrowserUtil.waitFor(5);
+        BrowserUtil.waitFor(2);
 
     }
     @Then("created user name should appear in Dashboard Page")

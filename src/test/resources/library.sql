@@ -1,1 +1,3 @@
-select * from users where id = 8066
+select * from users where id = 8081;
+
+select * from user_groups;

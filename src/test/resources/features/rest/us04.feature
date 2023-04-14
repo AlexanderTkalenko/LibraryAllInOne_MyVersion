@@ -13,7 +13,7 @@ Feature: As a librarian, I want to create a new user
     And "user_id" field should not be null
 
 
-  @wip
+  @wip @ui @db
   Scenario: Create a new user all layers
     Given I logged Library api as a "librarian"
     And Accept header is "application/json"

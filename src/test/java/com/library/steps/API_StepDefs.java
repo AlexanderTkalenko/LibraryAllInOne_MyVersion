@@ -4,6 +4,7 @@ import com.library.pages.BookPage;
 import com.library.pages.LoginPage;
 import com.library.utility.*;
 import io.cucumber.java.en.*;
+import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
@@ -74,7 +75,7 @@ public class API_StepDefs {
 
         response.then().body(path, notNullValue());
 
-        System.out.println("user id = " + response.then().extract().jsonPath().getString(path));//need to delete
+        newId = response.then().extract().jsonPath().getString(path);
 
     }
 
@@ -147,7 +148,6 @@ public class API_StepDefs {
     public void the_field_value_for_path_should_be_equal_to(String message, String messageItSelf) {
 
        response.then().body(message, is(messageItSelf));
-       newId = response.then().extract().jsonPath().getString("book_id");
 
     }
 
@@ -224,23 +224,72 @@ public class API_StepDefs {
             US 04
      */
 
+    static String newEmailAPI;
+    static String newPasswordAPI;
+    static String newUserNameAPI;
+
     @Then("created user information should match with Database")
     public void created_user_information_should_match_with_database() {
 
+        String query = "select * from users where id = " + newId;
+        DB_Util.runQuery(query);
+
+        Map<String, Object> actualMapDB = DB_Util.getRowMap(1);
+
+
+
+        JsonPath jsonPath = givenPart.pathParam("id", newId)
+                .get(ConfigurationReader.getProperty("library.baseUri") + "/get_user_by_id/{id}").prettyPeek()
+                .then().statusCode(200)
+                .extract().jsonPath();
+
+        Map<Object, Object> expectedMapAPI = jsonPath.getMap("");
+
+        System.out.println("expectedMapAPI = " + expectedMapAPI);
+        System.out.println("actualMapDB = " + actualMapDB);
+
+        newEmailAPI = expectedMapAPI.get("email").toString();
+        newPasswordAPI = expectedMapAPI.get("password").toString();
+        newUserNameAPI = expectedMapAPI.get("full_name").toString();
+
+        Assert.assertEquals(expectedMapAPI, actualMapDB);
 
 
     }
     @Then("created user should be able to login Library UI")
     public void created_user_should_be_able_to_login_library_ui() {
 
+        loginPage.login(newEmailAPI, newPasswordAPI);
+        BrowserUtil.waitFor(5);
 
     }
     @Then("created user name should appear in Dashboard Page")
     public void created_user_name_should_appear_in_dashboard_page() {
 
+        String actualUserNameUI = loginPage.accountHolderName.getText();
+
+        Assert.assertEquals(newUserNameAPI, actualUserNameUI);
 
     }
 
+
+    /*
+            US 05
+     */
+
+    static String token;
+    @Given("I logged Library api with credentials {string} and {string}")
+    public void i_logged_library_api_with_credentials_and(String email, String password) {
+
+
+
+    }
+    @Given("I send token information as request body")
+    public void i_send_token_information_as_request_body() {
+
+
+
+    }
 
 
 

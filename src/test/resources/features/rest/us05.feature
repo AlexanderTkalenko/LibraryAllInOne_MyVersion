@@ -1,3 +1,4 @@
+@us05
 Feature: : As a user, I want to view my own user information using the API
   so that I can see what information is stored about me
 

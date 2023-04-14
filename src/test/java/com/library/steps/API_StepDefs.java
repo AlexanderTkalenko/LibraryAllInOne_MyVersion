@@ -28,6 +28,10 @@ public class API_StepDefs {
     static String param;
     static Map<String, Object> requestBody = new LinkedHashMap<>();
 
+    static String newEmailAPI;
+    static String newPasswordAPI;
+    static String newUserNameAPI;
+
 
 
 
@@ -131,10 +135,14 @@ public class API_StepDefs {
 
             case "user":
                 requestBody = LibraryAPI_Util.getRandomUserMap();
+                newUserNameAPI = (String) requestBody.get("full_name");
+                newEmailAPI = (String) requestBody.get("email");
+                newPasswordAPI = (String) requestBody.get("password");
                 break;
         }
 
         givenPart = givenPart.formParams(requestBody);
+
 
 
     }
@@ -224,9 +232,7 @@ public class API_StepDefs {
             US 04
      */
 
-    static String newEmailAPI;
-    static String newPasswordAPI;
-    static String newUserNameAPI;
+
 
     @Then("created user information should match with Database")
     public void created_user_information_should_match_with_database() {
@@ -245,12 +251,6 @@ public class API_StepDefs {
 
         Map<Object, Object> expectedMapAPI = jsonPath.getMap("");
 
-        System.out.println("expectedMapAPI = " + expectedMapAPI);
-        System.out.println("actualMapDB = " + actualMapDB);
-
-        newEmailAPI = expectedMapAPI.get("email").toString();
-        newPasswordAPI = expectedMapAPI.get("password").toString();
-        newUserNameAPI = expectedMapAPI.get("full_name").toString();
 
         Assert.assertEquals(expectedMapAPI, actualMapDB);
 
@@ -267,6 +267,9 @@ public class API_StepDefs {
     public void created_user_name_should_appear_in_dashboard_page() {
 
         String actualUserNameUI = loginPage.accountHolderName.getText();
+
+        System.out.println("actualUserNameUI = " + actualUserNameUI);
+        System.out.println("newUserNameAPI = " + newUserNameAPI);
 
         Assert.assertEquals(newUserNameAPI, actualUserNameUI);
 

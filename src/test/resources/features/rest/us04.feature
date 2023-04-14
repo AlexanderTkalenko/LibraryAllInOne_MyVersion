@@ -1,5 +1,6 @@
 Feature: As a librarian, I want to create a new user
 
+
   Scenario: Create a new user API
     Given I logged Library api as a "librarian"
     And Accept header is "application/json"
@@ -12,7 +13,7 @@ Feature: As a librarian, I want to create a new user
     And "user_id" field should not be null
 
 
-
+  @wip
   Scenario: Create a new user all layers
     Given I logged Library api as a "librarian"
     And Accept header is "application/json"
@@ -26,4 +27,3 @@ Feature: As a librarian, I want to create a new user
     And created user information should match with Database
     And created user should be able to login Library UI
     And created user name should appear in Dashboard Page
-    #API is expected

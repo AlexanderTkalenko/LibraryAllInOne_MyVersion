@@ -10,9 +10,7 @@ import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 import org.junit.Assert;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
@@ -25,7 +23,7 @@ public class API_StepDefs {
     RequestSpecification givenPart;
     ValidatableResponse thenPart;
     Response response;
-    static String newBookId;
+    static String newId;
     static String param;
     static Map<String, Object> requestBody = new LinkedHashMap<>();
 
@@ -75,6 +73,8 @@ public class API_StepDefs {
     public void field_should_not_be_null(String path) {
 
         response.then().body(path, notNullValue());
+
+        System.out.println("user id = " + response.then().extract().jsonPath().getString(path));//need to delete
 
     }
 
@@ -147,6 +147,7 @@ public class API_StepDefs {
     public void the_field_value_for_path_should_be_equal_to(String message, String messageItSelf) {
 
        response.then().body(message, is(messageItSelf));
+       newId = response.then().extract().jsonPath().getString("book_id");
 
     }
 
@@ -166,8 +167,6 @@ public class API_StepDefs {
 
         loginPage.navigateModule(modulePage);
 
-
-
     }
     @Then("UI, Database and API created book information must match")
     public void ui_database_and_api_created_book_information_must_match() {
@@ -176,22 +175,71 @@ public class API_StepDefs {
         BrowserUtil.waitFor(3);
 
 
-        String query = "select * from books where id = " + newBookId;
+        String query = "select * from books where id = " + newId;
         DB_Util.runQuery(query);
 
-        DB_Util.getRowMap(0);
+        Map<String, Object> actualMapFromDB = DB_Util.getRowMap(1);
 
 
-        JsonPath jsonPath = givenPart.pathParam("id", newBookId)
-                .get(ConfigurationReader.getProperty("library.baseUri") + "/get_book_by_id/{id}")
+        JsonPath jsonPath = givenPart.pathParam("id", newId)
+                .get(ConfigurationReader.getProperty("library.baseUri") + "/get_book_by_id/{id}").prettyPeek()
                 .then().statusCode(200)
                 .extract().jsonPath();
 
+        Map<Object, Object> expectedMapAPI = jsonPath.getMap("");
+
+
+        bookPage.editBook((String) expectedMapAPI.get("name")).click();
+
+        String actualBookNameUI = bookPage.bookName.getAttribute("value");
+        String actualIsbnUI = bookPage.isbn.getAttribute("value");
+        String actualYearUI = bookPage.year.getAttribute("value");
+        String actualAuthorUI = bookPage.author.getAttribute("value");
+
+        Assert.assertEquals(expectedMapAPI,actualMapFromDB);
+
+        System.out.println("expectedMapAPI = " + expectedMapAPI);
+
+        Assert.assertEquals(expectedMapAPI.get("name"),actualBookNameUI);
+        Assert.assertEquals(expectedMapAPI.get("isbn"),actualIsbnUI);
+        Assert.assertEquals(expectedMapAPI.get("year"),actualYearUI);
+        Assert.assertEquals(expectedMapAPI.get("author"),actualAuthorUI);
+
+
+        /*  If any Librarian have rights to delete Book/User
+        givenPart.pathParam("id", newId)
+                .when().delete(ConfigurationReader.getProperty("library.baseUri") + "/delete_book/{id}").prettyPeek()
+                .then().statusCode(204);
+
+        givenPart.pathParam("id", newId)
+                .when().get(ConfigurationReader.getProperty("library.baseUri") + "/get_book_by_id/{id}")
+                .then().statusCode(404);
+
+         */
+
+    }
+
+
+    /*
+            US 04
+     */
+
+    @Then("created user information should match with Database")
+    public void created_user_information_should_match_with_database() {
 
 
 
     }
+    @Then("created user should be able to login Library UI")
+    public void created_user_should_be_able_to_login_library_ui() {
 
+
+    }
+    @Then("created user name should appear in Dashboard Page")
+    public void created_user_name_should_appear_in_dashboard_page() {
+
+
+    }
 
 
 

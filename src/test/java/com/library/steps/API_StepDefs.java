@@ -18,8 +18,8 @@ import static org.hamcrest.Matchers.*;
 
 public class API_StepDefs {
 
-    LoginPage loginPage = new LoginPage();
-    BookPage bookPage = new BookPage();
+    LoginPage loginPage;
+    BookPage bookPage;
 
     RequestSpecification givenPart;
     Response response;
@@ -165,18 +165,20 @@ public class API_StepDefs {
     @Given("I logged in Library UI as {string}")
     public void i_logged_in_library_ui_as(String userType) {
 
+        loginPage = new LoginPage();
         loginPage.login(userType);
 
     }
     @Given("I navigate to {string} page")
     public void i_navigate_to_page(String modulePage) {
 
+        loginPage = new LoginPage();
         loginPage.navigateModule(modulePage);
 
     }
     @Then("UI, Database and API created book information must match")
     public void ui_database_and_api_created_book_information_must_match() {
-
+        bookPage = new BookPage();
         bookPage.search.sendKeys(requestBody.get("name").toString());
         BrowserUtil.waitFor(2);
 
@@ -257,6 +259,8 @@ public class API_StepDefs {
     @Then("created user should be able to login Library UI")
     public void created_user_should_be_able_to_login_library_ui() {
 
+        loginPage = new LoginPage();
+
         loginPage.login(newEmailAPI, newPasswordAPI);
         BrowserUtil.waitFor(2);
 
@@ -264,6 +268,7 @@ public class API_StepDefs {
     @Then("created user name should appear in Dashboard Page")
     public void created_user_name_should_appear_in_dashboard_page() {
 
+        loginPage = new LoginPage();
         String actualUserNameUI = loginPage.accountHolderName.getText();
 
         Assert.assertEquals(newUserNameAPI, actualUserNameUI);

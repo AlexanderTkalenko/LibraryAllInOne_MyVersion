@@ -22,7 +22,6 @@ public class API_StepDefs {
     BookPage bookPage = new BookPage();
 
     RequestSpecification givenPart;
-    ValidatableResponse thenPart;
     Response response;
     static String newId;
     static String param;
@@ -57,7 +56,6 @@ public class API_StepDefs {
 
         response = givenPart.when().get(ConfigurationReader.getProperty("library.baseUri") + getEndpoint).prettyPeek();
 
-        thenPart = response.then();
 
     }
 
@@ -268,11 +266,7 @@ public class API_StepDefs {
 
         String actualUserNameUI = loginPage.accountHolderName.getText();
 
-        System.out.println("actualUserNameUI = " + actualUserNameUI);
-        System.out.println("newUserNameAPI = " + newUserNameAPI);
-
         Assert.assertEquals(newUserNameAPI, actualUserNameUI);
-
 
     }
 
@@ -281,19 +275,32 @@ public class API_StepDefs {
             US 05
      */
 
+
     static String token;
     @Given("I logged Library api with credentials {string} and {string}")
     public void i_logged_library_api_with_credentials_and(String email, String password) {
 
+        token = given().log().uri()
+                .contentType(ContentType.URLENC)
+                .formParam("email", email)
+                .formParam("password", password)
+                .when()
+                .post(ConfigurationReader.getProperty("library.baseUri") +"/login").prettyPeek()
+                .then()
+                .statusCode(200).extract().jsonPath().getString("token");
 
+
+        givenPart = given().log().uri();
 
     }
     @Given("I send token information as request body")
     public void i_send_token_information_as_request_body() {
 
-
+        givenPart.formParam("token", token).when();
 
     }
+
+
 
 
 
